@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:keepScreenOn="true">
+
+    <org.opencv.android.JavaCameraView
+        android:id="@+id/cvView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:show_fps="true"
+        app:camera_id="any" />
+
+    <ceneax.lib.widget.PreviewSurfaceView
+        android:id="@+id/cvPreview"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"/>
+
+    <ceneax.lib.widget.PreviewSurfaceView
+        android:id="@+id/cvPreview2"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/tvInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_light"
+        android:layout_margin="10dp"/>
+
+    <ToggleButton
+        android:id="@+id/btSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"/>
+
+    <ToggleButton
+        android:id="@+id/btSwitchCanny"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"/>
+
+    <Button
+        android:id="@+id/btTakePhoto"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="拍照"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone"/>
+
+</RelativeLayout>
