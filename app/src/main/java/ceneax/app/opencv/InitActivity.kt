@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
+import ceneax.lib.core.Detector
 import kotlinx.android.synthetic.main.activity_init.*
 import org.opencv.android.BaseLoaderCallback
 import org.opencv.android.LoaderCallbackInterface
@@ -23,21 +24,6 @@ class InitActivity : BaseActivity() {
     private val NEEDED_PERMISSIONS = arrayOf(
         Manifest.permission.CAMERA
     )
-
-    /**
-     * OpenCV初始化回调
-     */
-    private val cvLoadCallback = object : BaseLoaderCallback(this) {
-        override fun onManagerConnected(status: Int) {
-            super.onManagerConnected(status)
-            if (status == LoaderCallbackInterface.SUCCESS) {
-//                showToast("OpenCV初始化成功")
-//                initView()
-            } else {
-                showToast("OpenCV初始化失败！$status")
-            }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,13 +67,7 @@ class InitActivity : BaseActivity() {
      * 初始化OpenCV
      */
     private fun initOpenCV() {
-        if (!OpenCVLoader.initDebug()) {
-            showToast("未找到OpenCV的so库，使用OpenCV Manager进行初始化")
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0, this, cvLoadCallback)
-        } else {
-//            showToast("使用OpenCV的so库进行初始化")
-            cvLoadCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS)
-        }
+        Detector.init(applicationContext)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
