@@ -45,7 +45,7 @@ public class CVUtil {
     }
 
     /**
-     * 特征对比：欧式距离(欧几里得度量 Euclidean Distance) 对比法
+     * 特征对比：欧氏距离(欧几里得度量 Euclidean Distance) 对比法
      * 计算结果越趋近于0表示越相似
      */
     public static double compareED(List<Double> src, List<Double> target) {

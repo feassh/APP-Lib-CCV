@@ -33,6 +33,8 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
 
     private var mTake = false
 
+    private var tmpList = ArrayList<ArrayList<Double>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,6 +48,12 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
         }
 
         initView()
+
+        // 构造的临时测试数据
+        tmpList = ArrayList()
+        for (i in 0 until 10000) {
+            tmpList.add(Gson().fromJson<ArrayList<Double>>("[71.0,91.0,110.5,131.5,155.0,180.5,206.0,230.0,250.0,266.5,271.5,271.0,264.0,251.5,237.5,222.5,207.0,81.0,83.5,95.0,110.5,128.5,150.0,156.0,165.5,179.0,194.5,152.0,164.5,177.0,189.5,182.5,190.5,199.0,202.5,205.0,108.0,110.0,119.5,133.5,127.5,118.0,165.5,166.5,176.0,188.0,185.0,176.0,189.0,193.0,199.5,208.5,212.5,223.0,236.0,235.5,230.0,224.0,215.5,204.0,192.5,206.0,214.0,219.5,232.0,220.5,215.0,207.0]", ArrayList::class.java))
+        }
     }
 
     /**
@@ -177,8 +185,27 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
             val rect = faces.toArray()
 
             if (rect.size > 0) {
+                if (rect.first().width < src.width() - (src.width() / 3)) {
+                    runOnUiThread {
+                        tvWarn.visibility = View.VISIBLE
+                        tvWarn.text = "请拉近镜头"
+                    }
+                    return src
+                }
+                if (rect.first().width > src.width() - (src.width() / 4)) {
+                    runOnUiThread {
+                        tvWarn.visibility = View.VISIBLE
+                        tvWarn.text = "请拉远镜头"
+                    }
+                    return src
+                }
+                runOnUiThread {
+                    tvWarn.visibility = View.GONE
+                    tvWarn.text = ""
+                }
+
                 // 已经检测到人脸，截取人脸方形图片
-                mat = src.submat(rect.first())
+                mat = mat.submat(rect.first())
 
                 CVUtil.mat2gray(mat, mat)
                 // dlib
@@ -198,18 +225,18 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
                     }
 
                     // 输出
-                    Log.e("-opencv-", Gson().toJson(ad))
+//                    Log.e("-opencv-", Gson().toJson(ad))
 
                     // 测试数据
-                    val tmpList = Gson().fromJson<ArrayList<Double>>("[71.0,91.0,110.5,131.5,155.0,180.5,206.0,230.0,250.0,266.5,271.5,271.0,264.0,251.5,237.5,222.5,207.0,81.0,83.5,95.0,110.5,128.5,150.0,156.0,165.5,179.0,194.5,152.0,164.5,177.0,189.5,182.5,190.5,199.0,202.5,205.0,108.0,110.0,119.5,133.5,127.5,118.0,165.5,166.5,176.0,188.0,185.0,176.0,189.0,193.0,199.5,208.5,212.5,223.0,236.0,235.5,230.0,224.0,215.5,204.0,192.5,206.0,214.0,219.5,232.0,220.5,215.0,207.0]", ArrayList::class.java)
+//                    val tmpList = Gson().fromJson<ArrayList<Double>>("[71.0,91.0,110.5,131.5,155.0,180.5,206.0,230.0,250.0,266.5,271.5,271.0,264.0,251.5,237.5,222.5,207.0,81.0,83.5,95.0,110.5,128.5,150.0,156.0,165.5,179.0,194.5,152.0,164.5,177.0,189.5,182.5,190.5,199.0,202.5,205.0,108.0,110.0,119.5,133.5,127.5,118.0,165.5,166.5,176.0,188.0,185.0,176.0,189.0,193.0,199.5,208.5,212.5,223.0,236.0,235.5,230.0,224.0,215.5,204.0,192.5,206.0,214.0,219.5,232.0,220.5,215.0,207.0]", ArrayList::class.java)
 
-                    val ous = CVUtil.compareED(ad, tmpList)
-                    if (ous <= 20) {
+                    val ous = CVUtil.compareEDs(ad, tmpList as List<MutableList<Double>>)
+                    if (ous.value <= 20) {
                         Imgproc.putText(src, "Yes Face!!!", Point(rect.first().x.toDouble(), rect.first().y.toDouble()),
                             Imgproc.FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0.0, 255.0, 0.0), 2)
                     }
                     runOnUiThread {
-                        setTitle("欧式距离：${ous}")
+                        setTitle("欧氏距离：${ous.value}")
                     }
 
                     try {
