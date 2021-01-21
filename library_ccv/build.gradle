@@ -1,55 +1,72 @@
-apply plugin: 'com.android.library'
-
-def openCVersionName = "4.5.0"
-def openCVersionCode = ((4 * 100 + 5) * 100 + 0) * 10 + 0
+plugins {
+    id 'com.android.library'
+}
 
 android {
     compileSdkVersion 30
+    buildToolsVersion "30.0.2"
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
 
-        versionCode openCVersionCode
-        versionName openCVersionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
 
         externalNativeBuild {
             cmake {
-                arguments "-DANDROID_STL=c++_shared"
-                targets "opencv_jni_shared"
+                cFlags   "-O3"
+                cppFlags "-std=c++11 -frtti -fexceptions"
+                arguments "-DANDROID_PLATFORM=android-16",
+                        "-DANDROID_TOOLCHAIN=clang",
+                        "-DANDROID_STL=c++_shared",
+                        "-DANDROID_CPP_FEATURES=rtti exceptions"
+            }
+        }
+
+        sourceSets {
+            main {
+                jniLibs.srcDirs = [
+                        "src/main/cppLibs/dlib/lib",
+                        "src/main/cppLibs/opencv"
+                ]
             }
         }
     }
 
     buildTypes {
-        debug {
-            packagingOptions {
-                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
-            }
-        }
         release {
-            packagingOptions {
-                doNotStrip '**/*.so'  // controlled by OpenCV CMake scripts
-            }
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_6
-        targetCompatibility JavaVersion.VERSION_1_6
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     externalNativeBuild {
         cmake {
-            path (project.projectDir.toString() + '/lib_helper/CMakeLists.txt')
+            path "CMakeLists.txt"
         }
     }
+
+    packagingOptions {
+        pickFirst "**/libc++_shared.so"
+        pickFirst "lib/*/libopencv_java4.so"
+        pickFirst "lib/*/libdlib.so"
+    }
+    ndkVersion '22.0.7026061'
 }
 
 dependencies {
-    implementation 'androidx.annotation:annotation:1.1.0'
-}
-repositories {
-    mavenCentral()
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

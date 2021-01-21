@@ -4,10 +4,10 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.MotionEvent
 import android.widget.Toast
+import ceneax.lib.ccv.util.ObjectUtil
 import kotlinx.android.synthetic.main.activity_pic_proc.*
 import org.opencv.android.Utils
 import org.opencv.core.*
-import ceneax.lib.util.ObjectUtil
 import org.opencv.imgproc.Imgproc
 import kotlin.math.abs
 

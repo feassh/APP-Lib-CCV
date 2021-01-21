@@ -5,14 +5,14 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import cenax.dlib.Native
+import ceneax.lib.ccv.core.Detector
+import ceneax.lib.ccv.util.CVUtil
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.Utils
 import org.opencv.core.*
-import ceneax.lib.core.Detector
-import ceneax.lib.util.ObjectUtil
-import ceneax.lib.util.CVUtil
 import org.opencv.imgproc.Imgproc
 import kotlin.math.abs
 import kotlin.math.round
@@ -60,7 +60,7 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
      * 初始化View
      */
     fun initView() {
-        cvView.setCameraPermissionGranted()
+//        cvView.setCameraPermissionGranted()
         cvView.enableView()
         cvView.setCvCameraViewListener(this)
         cvPreview.touch(true)
@@ -208,41 +208,47 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
                 mat = mat.submat(rect.first())
 
                 CVUtil.mat2gray(mat, mat)
+
                 // dlib
-                val result = Detector.detect(mat)
-                result?.forEach {
-                    // 画矩形
-                    Imgproc.rectangle(src, rect.first(), Scalar(0.0, 0.0, 255.0), 2)
-//                    Imgproc.rectangle(src, Point(it.left.toDouble(), it.top.toDouble()), Point(it.right.toDouble(), it.bottom.toDouble()), Scalar(0.0, 0.0, 255.0))
+//                val result = Detector.detect(mat)
+//                result?.forEach {
+//                    // 画矩形
+//                    Imgproc.rectangle(src, rect.first(), Scalar(0.0, 0.0, 255.0), 2)
+////                    Imgproc.rectangle(src, Point(it.left.toDouble(), it.top.toDouble()), Point(it.right.toDouble(), it.bottom.toDouble()), Scalar(0.0, 0.0, 255.0))
+//
+//                    val landmarks = it.faceLandmarks
+//                    // 坐标平均值
+//                    val ad = ArrayList<Double>()
+//                    landmarks.forEach { item ->
+//                        Imgproc.drawMarker(mat, Point(item.x.toDouble(), item.y.toDouble()), Scalar(0.0, 255.0, 0.0))
+//                        // 取点的平均值
+//                        ad.add((item.x.toDouble() + item.y.toDouble()) / 2)
+//                    }
+//
+//                    // 输出
+////                    Log.e("-opencv-", Gson().toJson(ad))
+//
+//                    // 测试数据
+////                    val tmpList = Gson().fromJson<ArrayList<Double>>("[71.0,91.0,110.5,131.5,155.0,180.5,206.0,230.0,250.0,266.5,271.5,271.0,264.0,251.5,237.5,222.5,207.0,81.0,83.5,95.0,110.5,128.5,150.0,156.0,165.5,179.0,194.5,152.0,164.5,177.0,189.5,182.5,190.5,199.0,202.5,205.0,108.0,110.0,119.5,133.5,127.5,118.0,165.5,166.5,176.0,188.0,185.0,176.0,189.0,193.0,199.5,208.5,212.5,223.0,236.0,235.5,230.0,224.0,215.5,204.0,192.5,206.0,214.0,219.5,232.0,220.5,215.0,207.0]", ArrayList::class.java)
+//
+//                    val ous = CVUtil.compareEDs(ad, tmpList as List<MutableList<Double>>)
+//                    if (ous.value <= 20) {
+//                        Imgproc.putText(src, "Yes Face!!!", Point(rect.first().x.toDouble(), rect.first().y.toDouble()),
+//                            Imgproc.FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0.0, 255.0, 0.0), 2)
+//                    }
+//                    runOnUiThread {
+//                        setTitle("欧氏距离：${ous.value}")
+//                    }
+//
+//                    try {
+//                        cvPreview.preview(mat, true) // .submat(Rect(it.left, it.top, it.right - it.left, it.bottom - it.top))
+//                    } catch (e: Exception) {}
+//                }
 
-                    val landmarks = it.faceLandmarks
-                    // 坐标平均值
-                    val ad = ArrayList<Double>()
-                    landmarks.forEach { item ->
-                        Imgproc.drawMarker(mat, Point(item.x.toDouble(), item.y.toDouble()), Scalar(0.0, 255.0, 0.0))
-                        // 取点的平均值
-                        ad.add((item.x.toDouble() + item.y.toDouble()) / 2)
-                    }
-
-                    // 输出
-//                    Log.e("-opencv-", Gson().toJson(ad))
-
-                    // 测试数据
-//                    val tmpList = Gson().fromJson<ArrayList<Double>>("[71.0,91.0,110.5,131.5,155.0,180.5,206.0,230.0,250.0,266.5,271.5,271.0,264.0,251.5,237.5,222.5,207.0,81.0,83.5,95.0,110.5,128.5,150.0,156.0,165.5,179.0,194.5,152.0,164.5,177.0,189.5,182.5,190.5,199.0,202.5,205.0,108.0,110.0,119.5,133.5,127.5,118.0,165.5,166.5,176.0,188.0,185.0,176.0,189.0,193.0,199.5,208.5,212.5,223.0,236.0,235.5,230.0,224.0,215.5,204.0,192.5,206.0,214.0,219.5,232.0,220.5,215.0,207.0]", ArrayList::class.java)
-
-                    val ous = CVUtil.compareEDs(ad, tmpList as List<MutableList<Double>>)
-                    if (ous.value <= 20) {
-                        Imgproc.putText(src, "Yes Face!!!", Point(rect.first().x.toDouble(), rect.first().y.toDouble()),
-                            Imgproc.FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0.0, 255.0, 0.0), 2)
-                    }
-                    runOnUiThread {
-                        setTitle("欧氏距离：${ous.value}")
-                    }
-
-                    try {
-                        cvPreview.preview(mat, true) // .submat(Rect(it.left, it.top, it.right - it.left, it.bottom - it.top))
-                    } catch (e: Exception) {}
-                }
+                val bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.RGB_565)
+                Utils.matToBitmap(mat, bitmap)
+                val res = Native.detectLandmarks(bitmap)
+                Log.e("-opencv-", if (res == null) "null" else res.contentToString())
 
                 return src
             } else {

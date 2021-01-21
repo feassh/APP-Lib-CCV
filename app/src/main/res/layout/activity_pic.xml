@@ -40,7 +40,7 @@
 
     </LinearLayout>
 
-    <ceneax.lib.widget.PreviewSurfaceView
+    <ceneax.lib.ccv.widget.PreviewSurfaceView
         android:id="@+id/cvPreview"
         android:layout_width="150dp"
         android:layout_height="200dp"

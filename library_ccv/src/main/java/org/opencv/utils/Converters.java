@@ -519,7 +519,8 @@ public class Converters {
         Mat res;
         int lCount = (pts != null) ? pts.size() : 0;
         if (lCount > 0) {
-            mats.addAll(pts);
+            for (MatOfPoint vpt : pts)
+                mats.add(vpt);
             res = vector_Mat_to_Mat(mats);
         } else {
             res = new Mat();
@@ -567,7 +568,8 @@ public class Converters {
         Mat res;
         int lCount = (pts != null) ? pts.size() : 0;
         if (lCount > 0) {
-            mats.addAll(pts);
+            for (MatOfPoint2f vpt : pts)
+                mats.add(vpt);
             res = vector_Mat_to_Mat(mats);
         } else {
             res = new Mat();
@@ -598,7 +600,8 @@ public class Converters {
         Mat res;
         int lCount = (pts != null) ? pts.size() : 0;
         if (lCount > 0) {
-            mats.addAll(pts);
+            for (MatOfPoint3f vpt : pts)
+                mats.add(vpt);
             res = vector_Mat_to_Mat(mats);
         } else {
             res = new Mat();
@@ -611,7 +614,8 @@ public class Converters {
         Mat res;
         int lCount = (kps != null) ? kps.size() : 0;
         if (lCount > 0) {
-            mats.addAll(kps);
+            for (MatOfKeyPoint vkp : kps)
+                mats.add(vkp);
             res = vector_Mat_to_Mat(mats);
         } else {
             res = new Mat();
@@ -710,7 +714,8 @@ public class Converters {
         Mat res;
         int lCount = (lvdm != null) ? lvdm.size() : 0;
         if (lCount > 0) {
-            mats.addAll(lvdm);
+            for (MatOfDMatch vdm : lvdm)
+                mats.add(vdm);
             res = vector_Mat_to_Mat(mats);
         } else {
             res = new Mat();
@@ -741,7 +746,8 @@ public class Converters {
         Mat res;
         int lCount = (lvb != null) ? lvb.size() : 0;
         if (lCount > 0) {
-            mats.addAll(lvb);
+            for (MatOfByte vb : lvb)
+                mats.add(vb);
             res = vector_Mat_to_Mat(mats);
         } else {
             res = new Mat();

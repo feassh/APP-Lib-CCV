@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.item_pic.view.*
 import org.opencv.android.Utils
 import org.opencv.core.*
 import org.opencv.features2d.DescriptorMatcher
-import org.opencv.features2d.SIFT
 import org.opencv.imgproc.Imgproc
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -237,11 +236,11 @@ class PicActivity : BaseActivity() {
                     var i = -1
                     var currentLarge = 0.0
                     mList.forEachIndexed { index, item ->
-                        if (matchImage(it, item.mat)) {
-                            lvMain[index].setBackgroundColor(Color.GREEN)
-                            Toast.makeText(this@PicActivity, "相似度高：${index + 1}", Toast.LENGTH_SHORT).show()
-                            return
-                        }
+//                        if (matchImage(it, item.mat)) {
+//                            lvMain[index].setBackgroundColor(Color.GREEN)
+//                            Toast.makeText(this@PicActivity, "相似度高：${index + 1}", Toast.LENGTH_SHORT).show()
+//                            return
+//                        }
 
 //                        val value = Imgproc.compareHist(matHist, item.mat, Imgproc.HISTCMP_CORREL)
 //                        Log.e("///", value.toString())
@@ -265,57 +264,57 @@ class PicActivity : BaseActivity() {
         }
     }
 
-    private fun matchImage(base: Mat, com: Mat): Boolean {
-        val resT = Mat()
-        val resO = Mat()
-
-        val sift = SIFT.create()
-
-        val baseKeyPoints = MatOfKeyPoint()
-        val comKeyPoints = MatOfKeyPoint()
-
-        // 获取特征点
-        sift.detect(base, baseKeyPoints)
-        sift.detect(com, comKeyPoints)
-
-        // 获取特征描述
-        sift.compute(base, baseKeyPoints, resT)
-        sift.compute(com, comKeyPoints, resO)
-
-        // 展示原图和描述图
-        // ...
-        cvPreview.preview(resO, true)
-
-//        val a = resT.dump()
-//        val b = resO.dump()
-//        Log.e("-opencv-", "resT: ${a.length}, resO: ${b.length}")
-//        Log.e("-opencv-", "resT gzip: ${gzip(a).length}, resO gzip: ${gzip(b).length}")
-
-        // 描述匹配
-        val matchList = ArrayList<MatOfDMatch>()
-        val descriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED)
-        // knnMatch方法的作用就是在给定特征描述集合中寻找最佳匹配
-        // 使用KNN-matching算法，令K=2，则每个match得到两个最接近的descriptor，然后计算最接近距离和次接近距离之间的比值，当比值大于既定值时，才作为最终match。
-        descriptorMatcher.knnMatch(resT, resO, matchList, 2)
-
-        // 计算匹配结果
-        val similarMatchList = LinkedList<DMatch>()
-        // 对匹配结果进行筛选，依据distance进行筛选
-        matchList.forEach {
-            val dMatchArray = it.toArray()
-            val dm1 = dMatchArray[0]
-            val dm2 = dMatchArray[1]
-
-            if (dm1.distance <= dm2.distance * 0.7f) {
-                similarMatchList.addLast(dm1)
-            }
-        }
-
-        // 当匹配后的特征点大于等于 30 个，则认为模板图在原图中，该值可以自行调整
-        Log.e("-opencv-", "matchList.size: ${matchList.size}, similarMatchList.size: ${similarMatchList.size}, " +
-                "percent: ${similarMatchList.size.toDouble() / matchList.size.toDouble()}")
-        return similarMatchList.size.toDouble() / matchList.size.toDouble() >= 0.1 // similarMatchList.size >= 30
-    }
+//    private fun matchImage(base: Mat, com: Mat): Boolean {
+//        val resT = Mat()
+//        val resO = Mat()
+//
+//        val sift = SIFT.create()
+//
+//        val baseKeyPoints = MatOfKeyPoint()
+//        val comKeyPoints = MatOfKeyPoint()
+//
+//        // 获取特征点
+//        sift.detect(base, baseKeyPoints)
+//        sift.detect(com, comKeyPoints)
+//
+//        // 获取特征描述
+//        sift.compute(base, baseKeyPoints, resT)
+//        sift.compute(com, comKeyPoints, resO)
+//
+//        // 展示原图和描述图
+//        // ...
+//        cvPreview.preview(resO, true)
+//
+////        val a = resT.dump()
+////        val b = resO.dump()
+////        Log.e("-opencv-", "resT: ${a.length}, resO: ${b.length}")
+////        Log.e("-opencv-", "resT gzip: ${gzip(a).length}, resO gzip: ${gzip(b).length}")
+//
+//        // 描述匹配
+//        val matchList = ArrayList<MatOfDMatch>()
+//        val descriptorMatcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED)
+//        // knnMatch方法的作用就是在给定特征描述集合中寻找最佳匹配
+//        // 使用KNN-matching算法，令K=2，则每个match得到两个最接近的descriptor，然后计算最接近距离和次接近距离之间的比值，当比值大于既定值时，才作为最终match。
+//        descriptorMatcher.knnMatch(resT, resO, matchList, 2)
+//
+//        // 计算匹配结果
+//        val similarMatchList = LinkedList<DMatch>()
+//        // 对匹配结果进行筛选，依据distance进行筛选
+//        matchList.forEach {
+//            val dMatchArray = it.toArray()
+//            val dm1 = dMatchArray[0]
+//            val dm2 = dMatchArray[1]
+//
+//            if (dm1.distance <= dm2.distance * 0.7f) {
+//                similarMatchList.addLast(dm1)
+//            }
+//        }
+//
+//        // 当匹配后的特征点大于等于 30 个，则认为模板图在原图中，该值可以自行调整
+//        Log.e("-opencv-", "matchList.size: ${matchList.size}, similarMatchList.size: ${similarMatchList.size}, " +
+//                "percent: ${similarMatchList.size.toDouble() / matchList.size.toDouble()}")
+//        return similarMatchList.size.toDouble() / matchList.size.toDouble() >= 0.1 // similarMatchList.size >= 30
+//    }
 
     /**
      * 使用gzip进行压缩

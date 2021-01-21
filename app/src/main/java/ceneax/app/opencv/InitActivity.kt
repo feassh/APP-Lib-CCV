@@ -5,7 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
-import ceneax.lib.core.Detector
+import ceneax.lib.ccv.core.Detector
 import kotlinx.android.synthetic.main.activity_init.*
 import org.opencv.android.BaseLoaderCallback
 import org.opencv.android.LoaderCallbackInterface
