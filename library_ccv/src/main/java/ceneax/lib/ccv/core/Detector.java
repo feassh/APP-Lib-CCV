@@ -3,10 +3,6 @@ package ceneax.lib.ccv.core;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -52,7 +48,6 @@ public class Detector {
     /**
      * OpenCV检测人脸, 传入 [mat] 和 [faces], 结果会保存到 [faces] 中
      */
-    @WorkerThread
     public static void detectFaces(Mat mat, MatOfRect faces) {
         Mat gray = new Mat();
         Imgproc.cvtColor(mat, gray, Imgproc.COLOR_BGRA2GRAY);
@@ -63,16 +58,14 @@ public class Detector {
     /**
      * Dlib人脸检测, 传入 [bitmap] 对象
      */
-    @WorkerThread
-    public static float[] recgFace(@NonNull Bitmap bitmap) {
+    public static float[] recgFace(Bitmap bitmap) {
         return Dlib.recg(bitmap);
     }
 
     /**
      * Dlib人脸检测, 传入 [mat] 对象
      */
-    @WorkerThread
-    public static float[] recgFace(@NonNull Mat mat) {
+    public static float[] recgFace(Mat mat) {
         Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.RGB_565);
         Utils.matToBitmap(mat, bitmap);
         float[] res = recgFace(bitmap);
@@ -83,7 +76,6 @@ public class Detector {
     /**
      * 传入一组人脸128D数据，进行对比
      */
-    @WorkerThread
     public static float compute(float[] src, float[] tar) {
         return Dlib.compute(src, tar);
     }
