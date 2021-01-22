@@ -14,7 +14,7 @@ import org.opencv.core.MatOfRect;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 
-import cenax.dlib.Native;
+import cenax.dlib.Dlib;
 import ceneax.lib.ccv.util.FileUtil;
 
 /**
@@ -26,8 +26,9 @@ public class Detector {
 
     // OpenCV 人脸分类器
     private static CascadeClassifier mCasFace;
-    // Dlib 人脸数据检测提取类
-//    private static FaceDet mFaceDet;
+
+    // 人脸对比 欧氏距离 阈值
+    public static float THRESHOLD = 0.6f;
 
     /**
      * 私有化 构造方法
@@ -44,9 +45,8 @@ public class Detector {
         // 初始化分类器、检测器
         mCasFace = new CascadeClassifier();
         mCasFace.load(FileUtil.assetsToFile(context, "lbpcascade_frontalface.xml"));
-        Native.loadModel(FileUtil.assetsToFile(context, "shape_predictor_68_face_landmarks.dat"));
-        Native.loadRecgModel(FileUtil.assetsToFile(context, "dlib_face_recognition_resnet_model_v1.dat"));
-//        mFaceDet = new FaceDet(FileUtil.assetsToFile(context, "shape_predictor_68_face_landmarks.dat"));
+        Dlib.loadModel(FileUtil.assetsToFile(context, "shape_predictor_68_face_landmarks.dat"));
+        Dlib.loadRecgModel(FileUtil.assetsToFile(context, "dlib_face_recognition_resnet_model_v1.dat"));
     }
 
     /**
@@ -59,35 +59,33 @@ public class Detector {
         mCasFace.detectMultiScale(gray, faces);
     }
 
-//    /**
-//     * Dlib人脸检测, 传入 [path] 图片路径
-//     */
-//    @Nullable
-//    @WorkerThread
-//    public static List<VisionDetRet> detect(@NonNull String path) {
-//        return mFaceDet.detect(path);
-//    }
-//
-//    /**
-//     * Dlib人脸检测, 传入 [bitmap] 对象
-//     */
-//    @Nullable
-//    @WorkerThread
-//    public static List<VisionDetRet> detect(@NonNull Bitmap bitmap) {
-//        return mFaceDet.detect(bitmap);
-//    }
-//
-//    /**
-//     * Dlib人脸检测, 传入 [mat] 对象
-//     */
-//    @Nullable
-//    @WorkerThread
-//    public static List<VisionDetRet> detect(@NonNull Mat mat) {
-//        Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.RGB_565);
-//        Utils.matToBitmap(mat, bitmap);
-//        List<VisionDetRet> list = detect(bitmap);
-//        bitmap.recycle();
-//        return list;
-//    }
+
+    /**
+     * Dlib人脸检测, 传入 [bitmap] 对象
+     */
+    @WorkerThread
+    public static float[] recgFace(@NonNull Bitmap bitmap) {
+        return Dlib.recg(bitmap);
+    }
+
+    /**
+     * Dlib人脸检测, 传入 [mat] 对象
+     */
+    @WorkerThread
+    public static float[] recgFace(@NonNull Mat mat) {
+        Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(mat, bitmap);
+        float[] res = recgFace(bitmap);
+        bitmap.recycle();
+        return res;
+    }
+
+    /**
+     * 传入一组人脸128D数据，进行对比
+     */
+    @WorkerThread
+    public static float compute(float[] src, float[] tar) {
+        return Dlib.compute(src, tar);
+    }
 
 }

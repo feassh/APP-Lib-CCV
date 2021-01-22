@@ -1,11 +1,9 @@
 package ceneax.app.opencv
 
-import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import cenax.dlib.Native
+import cenax.dlib.Dlib
 import ceneax.lib.ccv.core.Detector
 import ceneax.lib.ccv.util.CVUtil
 import com.google.gson.Gson
@@ -13,10 +11,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.opencv.android.CameraBridgeViewBase
 import org.opencv.android.Utils
 import org.opencv.core.*
-import org.opencv.imgproc.Imgproc
-import kotlin.math.abs
-import kotlin.math.round
-import kotlin.math.sqrt
 
 
 class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 {
@@ -34,6 +28,7 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
     private var mTake = false
 
     private var tmpList = ArrayList<ArrayList<Double>>()
+    private var ab = FloatArray(128)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +49,8 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
         for (i in 0 until 10000) {
             tmpList.add(Gson().fromJson<ArrayList<Double>>("[71.0,91.0,110.5,131.5,155.0,180.5,206.0,230.0,250.0,266.5,271.5,271.0,264.0,251.5,237.5,222.5,207.0,81.0,83.5,95.0,110.5,128.5,150.0,156.0,165.5,179.0,194.5,152.0,164.5,177.0,189.5,182.5,190.5,199.0,202.5,205.0,108.0,110.0,119.5,133.5,127.5,118.0,165.5,166.5,176.0,188.0,185.0,176.0,189.0,193.0,199.5,208.5,212.5,223.0,236.0,235.5,230.0,224.0,215.5,204.0,192.5,206.0,214.0,219.5,232.0,220.5,215.0,207.0]", ArrayList::class.java))
         }
+
+        ab = Gson().fromJson<FloatArray>("[-0.101698674, 0.13185862, -0.018859316, -0.03697396, -0.06313801, -0.048449367, -0.026614746, -0.1395575, 0.1543801, -0.09604482, 0.24826673, -0.09726117, -0.24537478, -0.06711103, -0.03370415, 0.17365937, -0.23957944, -0.048314396, -0.051792197, -0.0011096541, 0.0761536, 0.049710646, 0.026736416, 0.08478188, -0.058534347, -0.3279084, -0.12114144, -0.1836083, 0.051822767, -0.083266884, -0.041987117, -0.02282236, -0.086688116, -0.0803823, 0.028988335, 0.004567325, -0.07254288, -0.07087374, 0.1982949, 0.017360825, -0.1879285, 0.0076300628, 0.048332926, 0.23045664, 0.1794013, 0.10813583, -0.0032506865, -0.16027983, 0.15103701, -0.16151288, 0.029995536, 0.11521808, 0.089242086, 0.10847391, 0.039534736, -0.14181048, 0.03669966, 0.14520422, -0.20545647, 0.03992342, 0.051381968, -0.07306227, 0.026397713, 0.007913874, 0.21906671, 0.073203556, -0.10421711, -0.11079192, 0.13029972, -0.19981766, -0.13115723, 0.055016704, -0.10992485, -0.21081713, -0.24753594, -0.0018008687, 0.36891437, 0.15027112, -0.1571914, 0.007527398, -0.015892984, -0.09252606, 0.14403452, 0.19412026, -0.016793046, -0.069715574, -0.05919407, -0.07682353, 0.1999592, -0.07886673, -8.098368E-4, 0.25783667, -0.020635657, 0.08712941, 0.017748725, -0.014107146, -0.11397704, 0.018971644, -0.06050942, -0.080102086, 0.028528629, -0.036081437, -0.029284228, 0.07357086, -0.17476337, 0.1552151, 0.010190974, -0.0026817652, 0.0038313274, -0.036652453, -0.028127035, -0.014978241, 0.16856109, -0.19294131, 0.24644406, 0.18525553, 0.06426914, 0.14019275, 0.0606359, 0.049463283, 0.0017689718, -0.03740639, -0.22703226, -0.04658958, 0.1245096, -0.029183544, 0.07153589, -0.050444413]", FloatArray::class.java)
     }
 
     /**
@@ -185,7 +182,7 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
             val rect = faces.toArray()
 
             if (rect.size > 0) {
-                if (rect.first().width < src.width() - (src.width() / 3)) {
+                if (rect.first().width < src.width() - (src.width() / 2)) {
                     runOnUiThread {
                         tvWarn.visibility = View.VISIBLE
                         tvWarn.text = "请拉近镜头"
@@ -245,10 +242,13 @@ class MainActivity : BaseActivity(), CameraBridgeViewBase.CvCameraViewListener2 
 //                    } catch (e: Exception) {}
 //                }
 
-                val bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.RGB_565)
-                Utils.matToBitmap(mat, bitmap)
-                val res = Native.detectLandmarks(bitmap)
-                Log.e("-opencv-", if (res == null) "null" else res.contentToString())
+                val res = Detector.recgFace(mat)
+                if (res != null) {
+                    val comp = Detector.compute(res, ab)
+                    runOnUiThread {
+                        title = "欧氏距离：$comp"
+                    }
+                }
 
                 return src
             } else {
