@@ -26,17 +26,27 @@ public class Detector {
     // 人脸对比 欧氏距离 阈值
     public static float THRESHOLD = 0.6f;
 
+    // 是否初始化成功
+    private static boolean mIsInit = false;
+
     /**
      * 私有化 构造方法
      */
     private Detector() { }
 
     /**
+     * 获取是否已经初始化成功
+     */
+    public static boolean getInitState() {
+        return mIsInit;
+    }
+
+    /**
      * 初始化
      */
     public static void init(Context context) {
         // 初始化OpenCV
-        OpenCVLoader.initDebug();
+        mIsInit = OpenCVLoader.initDebug();
 
         // 初始化分类器、检测器
         mCasFace = new CascadeClassifier();
