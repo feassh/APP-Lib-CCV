@@ -7,8 +7,12 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cenax.dlib.Dlib;
 import ceneax.lib.ccv.util.FileUtil;
@@ -22,6 +26,8 @@ public class Detector {
 
     // OpenCV 人脸分类器
     private static CascadeClassifier mCasFace;
+    // OpenCV 眼睛分类器
+    private static CascadeClassifier mCasEye;
 
     // 人脸对比 欧氏距离 阈值
     public static float THRESHOLD = 0.6f;
@@ -51,6 +57,10 @@ public class Detector {
         // 初始化分类器、检测器
         mCasFace = new CascadeClassifier();
         mCasFace.load(FileUtil.assetsToFile(context, "lbpcascade_frontalface.xml"));
+
+        mCasEye = new CascadeClassifier();
+        mCasEye.load(FileUtil.assetsToFile(context, "haarcascade_eye.xml"));
+
         Dlib.loadModel(FileUtil.assetsToFile(context, "shape_predictor_68_face_landmarks.dat"));
         Dlib.loadRecgModel(FileUtil.assetsToFile(context, "dlib_face_recognition_resnet_model_v1.dat"));
     }
@@ -64,6 +74,25 @@ public class Detector {
         mCasFace.detectMultiScale(gray, faces);
     }
 
+    /**
+     * 过滤无效人脸（眼睛个数不等于2则视为无效人脸）
+     */
+    public static List<Rect> filterInvalidFaces(Mat mat, MatOfRect faces) {
+        Mat gray = new Mat();
+        Imgproc.cvtColor(mat, gray, Imgproc.COLOR_BGRA2GRAY);
+
+        MatOfRect eyes = new MatOfRect();
+        List<Rect> rectList = new ArrayList<>();
+
+        for (Rect rect : faces.toArray()) {
+            mCasEye.detectMultiScale(mat.clone().submat(rect), eyes);
+            if (eyes.toArray().length == 2) {
+                rectList.add(rect);
+            }
+        }
+
+        return rectList;
+    }
 
     /**
      * Dlib人脸检测, 传入 [bitmap] 对象
