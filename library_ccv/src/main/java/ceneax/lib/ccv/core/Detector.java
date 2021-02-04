@@ -30,7 +30,7 @@ public class Detector {
     private static CascadeClassifier mCasEye;
 
     // 人脸对比 欧氏距离 阈值
-    public static float THRESHOLD = 0.6f;
+    public static float THRESHOLD = 0.4f;
 
     // 是否初始化成功
     private static boolean mIsInit = false;
@@ -95,14 +95,14 @@ public class Detector {
     }
 
     /**
-     * Dlib人脸检测, 传入 [bitmap] 对象
+     * Dlib人脸识别, 传入 [bitmap] 对象
      */
     public static float[] recgFace(Bitmap bitmap) {
         return Dlib.recg(bitmap);
     }
 
     /**
-     * Dlib人脸检测, 传入 [mat] 对象
+     * Dlib人脸识别, 传入 [mat] 对象
      */
     public static float[] recgFace(Mat mat) {
         Bitmap bitmap = Bitmap.createBitmap(mat.width(), mat.height(), Bitmap.Config.RGB_565);
@@ -110,13 +110,6 @@ public class Detector {
         float[] res = recgFace(bitmap);
         bitmap.recycle();
         return res;
-    }
-
-    /**
-     * 传入一组人脸128D数据，进行对比
-     */
-    public static float compute(float[] src, float[] tar) {
-        return Dlib.compute(src, tar);
     }
 
 }
