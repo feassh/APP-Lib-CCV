@@ -44,7 +44,7 @@ Android人脸检测与识别库，基于 [OpenCV](https://github.com/opencv/open
     
     /**
      * Example: Utils.matToBitmap(mat, bmp);
-     传入 [mat] 参数，将 [Mat] 对象转换为 [Bitmap] 对象，结果存放到 [bmp] 参数中
+     * 传入 [mat] 参数，将 [Mat] 对象转换为 [Bitmap] 对象，结果存放到 [bmp] 参数中
      */
     public static void matToBitmap(Mat mat, Bitmap bmp) {}
     
