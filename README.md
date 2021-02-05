@@ -6,7 +6,7 @@
 
 ### 集成方法：
 
- - 在线集成 
+ - 在线集成<br/>
    1.在项目的 build.gradle 中加入以下
 	``` java
 	allprojects {
@@ -23,7 +23,7 @@
 	}
 	```
 
- - 离线集成 
+ - 离线集成<br/>
    直接在 Android Studio 中把 “library_ccv” 文件夹作为模块引入到你的工程即可
 
 ### 使用方法：
